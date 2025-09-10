@@ -42,28 +42,3 @@ sparkConf:
   spark.hadoop.fs.s3a.endpoint.region: us-east-1
   spark.hadoop.fs.s3a.endpoint: http://minio:9000
   spark.hadoop.fs.s3a.path.style.access: true
-##  spark.sql.defaultCatalog: rest
-#  spark.sql.extensions: org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
-#  spark.sql.catalog.spark_catalog: org.apache.iceberg.spark.SparkSessionCatalog
-#  spark.sql.catalog.spark_catalog.type: hive
-#  spark.sql.catalog.local: org.apache.iceberg.spark.SparkCatalog
-#  spark.sql.catalog.local.type: hadoop
-#  spark.sql.catalog.local.warehouse: s3a://warehouse
-#
-#
-#
-
-
-
-#Testing
-#  spark.sql.catalog.rest: org.apache.iceberg.spark.SparkCatalog
-#  spark.sql.catalog.rest.catalog-impl: org.apache.iceberg.rest.RESTCatalog
-##  spark.sql.catalog.rest.type: rest
-#  spark.sql.catalog.rest.uri: http://localhost:8181/
-#  spark.sql.catalog.rest.client-type: rest
-#  spark.sql.catalog.rest.warehouse: s3a://warehouse/
-#  spark.sql.catalog.rest.s3.cross-region-access-enabled: true
-#  spark.sql.catalog.rest.s3.path-style-access: true
-#  spark.sql.catalog.rest.s3.endpoint: http://minio:9000
-#  spark.sql.catalog.rest.io-impl: org.apache.iceberg.aws.s3.S3FileIO
-#

@@ -9,7 +9,9 @@ def read_from_path(spark, path, file_format, options):
         return spark.read.parquet(path, **options)
     else:
         raise ValueError(f"Unsupported file format: {file_format}")
-def read_iceberg(spark, catalog,database,table_name):
+
+
+def read_iceberg(spark, catalog, database, table_name):
     df = spark.table(f"{catalog}.{database}.{table_name}")
     df.show()
     return df
