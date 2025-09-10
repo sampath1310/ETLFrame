@@ -1,0 +1,226 @@
+services:
+  spark-iceberg:
+    image: tabulario/spark-iceberg
+    container_name: spark-iceberg
+    build: spark/
+    networks:
+      iceberg_net:
+    depends_on:
+      - rest
+      - minio
+    volumes:
+      - .:/home/iceberg/project_code
+      - ./warehouse:/home/iceberg/warehouse
+      - ./notebooks:/home/iceberg/notebooks/notebooks
+    environment:
+      - AWS_ACCESS_KEY_ID=admin
+      - AWS_SECRET_ACCESS_KEY=password
+      - AWS_REGION=us-east-1
+    ports:
+      - 8888:8888
+      - 8080:8080
+      - 10000:10000
+      - 10001:10001
+  rest:
+    image: apache/iceberg-rest-fixture
+    container_name: iceberg-rest
+    networks:
+      iceberg_net:
+    ports:
+      - 8181:8181
+    environment:
+      - AWS_ACCESS_KEY_ID=admin
+      - AWS_SECRET_ACCESS_KEY=password
+      - AWS_REGION=us-east-1
+      - CATALOG_WAREHOUSE=s3://warehouse/
+      - CATALOG_IO__IMPL=org.apache.iceberg.aws.s3.S3FileIO
+      - CATALOG_S3_ENDPOINT=http://minio:9000
+  minio:
+    image: minio/minio
+    container_name: minio
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=password
+      - MINIO_DOMAIN=minio
+    networks:
+      iceberg_net:
+        aliases:
+          - warehouse.minio
+    ports:
+      - 9001:9001
+      - 9000:9000
+    command: ["server", "/data", "--console-address", ":9001"]
+  mc:
+    depends_on:
+      - minio
+    image: minio/mc
+    container_name: mc
+    networks:
+      iceberg_net:
+    environment:
+      - AWS_ACCESS_KEY_ID=admin
+      - AWS_SECRET_ACCESS_KEY=password
+      - AWS_REGION=us-east-1
+    entrypoint: |
+      /bin/sh -c "
+      until (/usr/bin/mc alias set minio http://minio:9000 admin password) do echo '...waiting...' && sleep 1; done;
+      /usr/bin/mc rm -r --force minio/warehouse;
+      /usr/bin/mc mb minio/warehouse;
+      /usr/bin/mc policy set public minio/warehouse;
+      tail -f /dev/null
+      "
+networks:
+  iceberg_net:
+#
+#
+#services:
+#    spark-iceberg:
+#        image: tabulario/spark-iceberg
+#        container_name: spark-iceberg
+#        build: spark/
+#        networks:
+#            iceberg_net:
+#        depends_on:
+#            - rest
+#            - minio
+#        volumes:
+#            - .:/home/iceberg/project_code
+#            - ./warehouse:/home/iceberg/warehouse
+#            - ./notebooks:/home/iceberg/notebooks/notebooks
+#        environment:
+#           - AWS_ACCESS_KEY_ID=admin
+#           - AWS_SECRET_ACCESS_KEY=password
+#           - AWS_REGION=us-east-1
+#        ports:
+#           - 8888:8888
+#           - 8080:8080
+#           - 10000:10000
+#           - 10001:10001
+##        extra_hosts:
+##          - "host.docker.internal:host-gateway"
+#    zookeeper:
+#        image: wurstmeister/zookeeper:latest
+#        expose:
+#            - "2181"
+#
+#    kafka:
+#        image: wurstmeister/kafka:2.13-2.8.1
+#        depends_on:
+#            - zookeeper
+#        ports:
+#            - "9092:9092"
+#        expose:
+#            - "9093"
+#        environment:
+#            KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9093,OUTSIDE://localhost:9092
+#            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+#            KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+#            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#            KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+#
+#
+#    postgres:
+#        image: postgres:16
+#        container_name: pg-catalog-store-spark
+#        networks:
+#            iceberg_net:
+#        ports:
+#            - "5432:5432"
+#        environment:
+#            - POSTGRES_USER=iceberg_postgres_user
+#            - POSTGRES_PASSWORD=iceberg_postgres_password
+#            - POSTGRES_DB=iceberg
+#        volumes:
+#            - pg_catalog_volume_spark:/var/lib/postgresql/data
+#
+#    rest:
+#        image: tabulario/iceberg-rest:latest
+#        container_name: iceberg-rest-spark
+#        networks:
+#            iceberg_net:
+#        ports:
+#            - 8182:8182
+#        extra_hosts:
+#            -  "host.docker.internal:host-gateway"
+#        environment:
+#            - AWS_ACCESS_KEY_ID=admin
+#            - AWS_SECRET_ACCESS_KEY=password
+#            - AWS_REGION=us-east-1
+#            - CATALOG_WAREHOUSE=s3a://warehouse/
+#            - CATALOG_IO__IMPL=org.apache.iceberg.aws.s3.S3FileIO
+#            - CATALOG_CATALOG_IMPL=org.apache.iceberg.jdbc.JdbcCatalog
+#            - CATALOG_URI=jdbc:postgresql://postgres:5432/iceberg
+#            - CATALOG_JDBC_USER=iceberg_postgres_user
+#            - CATALOG_JDBC_PASSWORD=iceberg_postgres_password
+#            - CATALOG_S3_ENDPOINT=http://minio:9000
+#            - CATALOG_S3_PATH__STYLE_ACCESS=true
+#        depends_on:
+#            - postgres
+#            - minio
+##    irc:
+##        hostname: irc
+##        image: apache/iceberg-rest-fixture
+##        depends_on:
+##            - postgres
+##            - minio
+##        volumes:
+##            - ./postgresql-42.7.7.jar:/usr/lib/iceberg-rest/postgresql-42.7.7.jar
+##        ports:
+##            - "8181:8181"
+##        environment:
+##            CATALOG_URI: jdbc:sqlite:file:/tmp/iceberg_rest_mode=memory
+###            CATALOG_JDBC_USER: iceberg_postgres_user
+###            CATALOG_JDBC_PASSWORD: iceberg_postgres_password
+##            AWS_REGION: us-east-1
+##            CATALOG_WAREHOUSE: s3://warehouse/
+##            CATALOG_IO__IMPL: org.apache.iceberg.aws.s3.S3FileIO
+##            CATALOG_S3_ENDPOINT: http://minio:9000
+##            CATALOG_S3_PATH__STYLE__ACCESS: true
+##            CATALOG_S3_ACCESS__KEY__ID: admin
+##            CATALOG_S3_SECRET__ACCESS__KEY: password
+##
+##        command: java -cp /usr/lib/iceberg-rest/*:iceberg-rest-adapter.jar org.apache.iceberg.rest.RESTCatalogServer
+##
+#
+#    minio:
+#        image: minio/minio
+#        container_name: minio-store-spark
+#        environment:
+#            - MINIO_ROOT_USER=admin
+#            - MINIO_ROOT_PASSWORD=password
+#            - MINIO_DOMAIN=minio
+#        networks:
+#            iceberg_net:
+#                aliases:
+#                    - warehouse.minio
+#        ports:
+#            - 9001:9001
+#            - 9000:9000
+#        command: ["server", "/data", "--console-address", ":9001"]
+#
+#    mc:
+#        depends_on:
+#            - minio
+#        image: minio/mc
+#        container_name: mc-spark
+#        networks:
+#            iceberg_net:
+#        environment:
+#            - AWS_ACCESS_KEY_ID=admin
+#            - AWS_SECRET_ACCESS_KEY=password
+#            - AWS_REGION=us-east-1
+#        entrypoint: >
+#            /bin/sh -c "
+#            until (/usr/bin/mc config host add minio http://minio:9000 admin password) do echo '...waiting...' && sleep 1; done;
+#            /usr/bin/mc mb --ignore-existing minio/warehouse;
+#            /usr/bin/mc mb --ignore-existing minio/metadata;
+#            /usr/bin/mc policy set public minio/warehouse;
+#            /usr/bin/mc policy set public minio/metadata;
+#            tail -f /dev/null
+#            "
+#
+#volumes:
+#    pg_catalog_volume_spark:
+#
+#networks:
+#    iceberg_net:
