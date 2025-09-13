@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: pythonproject
+Version: 0.1.0
+Summary: Add your description here
+Requires-Python: >=3.10
+Requires-Dist: black>=25.1.0
+Requires-Dist: coverage>=7.10.6
+Requires-Dist: flake8>=7.3.0
+Requires-Dist: isort>=6.0.1
+Requires-Dist: pre-commit>=4.3.0
+Requires-Dist: pylint>=3.3.8
+Requires-Dist: pytest>=8.4.2
+Requires-Dist: pyyaml>=6.0.2

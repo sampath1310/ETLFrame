@@ -1,7 +1,7 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.utils import AnalysisException
 
-from src.etl.readers import read_iceberg
+from src.services.readers import read_iceberg
 
 
 def write_to_path(spark_df: DataFrame, path: str, file_formats: str, mode):
@@ -14,9 +14,7 @@ def write_to_iceberg(spark, spark_df: DataFrame, catalog, database, table_name):
     except AnalysisException as e:
         spark.sql("CREATE NAMESPACE IF NOT EXISTS rest")
         x = spark.sql("SHOW CATALOGS;")
-        print(x.show())
         x = spark.sql("SHOW SCHEMAS;")
-        print(x.show())
 
         # spark.sql(f"""
         # CREATE DATABASE IF NOT EXISTS {catalog}.{database}

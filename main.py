@@ -1,4 +1,22 @@
-from src.common import spark_session
+# from common.spark_session import get_spark_session
+from pathlib import Path
+
+from src.common.constants import CONFIG_PATH, JOB_CONFIG_FILE_PATH
+from src.common.spark_session import get_spark_session
+from src.services.CSVExtractor import SparkFileExtractor
+from src.services.ConfigReader import ConfigReader
 
 if __name__ == "__main__":
-    spark = spark_session.get_spark_session("SalesETLJob")
+    file_path = (
+        Path(__file__).resolve().parent.parent.parent
+        / CONFIG_PATH
+        / JOB_CONFIG_FILE_PATH
+    )
+    config_reader = ConfigReader(file_path)
+    spark_config = config_reader.get_key("sparkConf")
+    spark = get_spark_session("TestJob", spark_config)
+    print("File format", config_reader.get_format_config())
+    spark_extractor = SparkFileExtractor(
+        spark, config_reader.get_format_config(), config_reader.get_options_config()
+    )
+    spark_extractor.read().show()

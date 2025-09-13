@@ -1,4 +1,5 @@
 sales_job:
+  name: sales_data
   input:
     path: "s3a://staging/Finance/BHCF20240331/BHCF20240331.txt"
     format: "csv"

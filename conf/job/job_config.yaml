@@ -1,0 +1,51 @@
+job:
+  input:
+    path: "s3a://staging/Finance/BHCF20240630/BHCF20240630.txt"
+    format: "csv"
+    options:
+      header: "true"
+      inferSchema: "true"
+      sep: "^"
+      lineSep: "\n"
+
+  output:
+    path: "s3://bronze/Finance/BHCF20240331/"
+    table_name: BHCF
+    format: "iceberg"
+    mode: "overwrite"
+    catalog: demo
+    database: rest
+sparkConf:
+  spark.hadoop.fs.s3a.impl: org.apache.hadoop.fs.s3a.S3AFileSystem
+  spark.hadoop.fs.s3a.aws.credentials.provider: org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider
+  spark.hadoop.fs.s3a.access.key: admin #cTDto6rGVUFm5BGKzhBp
+  spark.hadoop.fs.s3a.secret.key: password #ogLciu37etcynLtrHmPXmBXjIg0UsrdGxMPu7h6R
+  spark.hadoop.fs.s3a.endpoint: http://minio:9000
+  spark.hadoop.fs.s3a.endpoint.region: us-east-1
+  spark.hadoop.fs.s3a.path.style.access: true
+#  spark.sql.defaultCatalog: spark_catalog
+#  spark.sql.extensions: org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
+#  spark.sql.catalog.spark_catalog: org.apache.iceberg.spark.SparkCatalog
+#  spark.sql.catalog.spark_catalog.io-impl: org.apache.iceberg.aws.s3.S3FileIO
+#  spark.sql.catalog.spark_catalog.type: rest
+#  spark.sql.catalog.spark_catalog.warehouse: s3a://warehouse
+
+#  spark.eventLog.enabled: true
+#  spark.history.fs.logDirectory: /home/iceberg/spark-events
+#  spark.sql.catalog.demo.s3.endpoint: http://localhost:9000
+#  spark.sql.catalogImplementation: in-memory
+#  spark.sql.catalog.demo.warehouse: s3://warehouse/wh/
+#  spark.sql.catalog.demo.io-impl: org.apache.iceberg.aws.s3.S3FileIO
+#  spark.sql.extensions: org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
+#  spark.sql.catalog.demo.uri: http://rest:8181
+#  spark.sql.catalog.demo.type: rest
+#  spark.sql.catalog.demo: org.apache.iceberg.spark.SparkCatalog
+#  spark.sql.defaultCatalog: demo
+#  spark.ui.showConsoleProgress: true
+#  spark.hadoop.fs.s3a.impl: org.apache.hadoop.fs.s3a.S3AFileSystem
+#  spark.hadoop.fs.s3a.aws.credentials.provider: org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider
+#  spark.hadoop.fs.s3a.access.key: admin
+#  spark.hadoop.fs.s3a.secret.key: password
+#  spark.hadoop.fs.s3a.endpoint.region: us-east-1
+#  spark.hadoop.fs.s3a.endpoint: http://minio:9000
+#  spark.hadoop.fs.s3a.path.style.access: true
