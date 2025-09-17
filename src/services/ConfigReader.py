@@ -43,4 +43,19 @@ class ConfigReader:
         return options
 
     def get_output_config(self):
-        return self.get_key("output")
+        return self.get_job_config().get("output")
+
+    def get_output_catalog(self):
+        return self.get_output_config().get("catalog")
+
+    def get_output_database(self):
+        return self.get_output_config().get("database")
+
+    def get_output_table_name(self):
+        return self.get_output_config().get("table_name")
+
+    def get_output_format(self):
+        return self.get_output_config().get("format")
+
+    def get_output_mode(self):
+        return self.get_output_config().get("mode")

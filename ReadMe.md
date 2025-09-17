@@ -18,8 +18,8 @@ As the project flows we will
 
 /opt/spark/bin/spark-submit --master spark://4e4e024504d4:7077 --packages org.apache.hadoop:hadoop-aws:
 3.3.2,com.amazonaws:aws-java-sdk-bundle:1.11.1026,org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:
-1.9.2,org.apache.iceberg:iceberg-aws-bundle:1.7.1 --executor-memory 2G --num-executors
-2/home/iceberg/project_code/src/main.py --etl_job_config etl_config_iceberg
+1.9.2,org.apache.iceberg:iceberg-aws-bundle:1.7.1 --executor-memory 2G
+--num-executors2/home/iceberg/project_code/src/main.py --etl_job_config etl_config_iceberg
 
 References:
 https://www.dremio.com/resources/guides/apache-iceberg/

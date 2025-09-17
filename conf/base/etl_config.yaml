@@ -8,7 +8,6 @@ sales_job:
       inferSchema: "true"
       sep: "^"
       lineSep: "\n"
-
   output:
     path: "s3a://bronze/Finance/BHCF20240331/"
     format: "parquet"

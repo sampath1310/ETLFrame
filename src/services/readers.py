@@ -12,6 +12,8 @@ def read_from_path(spark, path, file_format, options):
 
 
 def read_iceberg(spark, catalog, database, table_name):
+    print(spark.sql("SHOW NAMESPACES;").show())
+    print(spark.sql("SHOW CATALOGS ;").show())
     df = spark.table(f"{catalog}.{database}.{table_name}")
     df.show()
     return df
